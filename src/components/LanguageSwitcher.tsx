@@ -31,9 +31,6 @@ export default function LanguageSwitcher() {
     i18n.changeLanguage(key);
   };
 
-  const currentLanguage = languages.find(lang => lang.key === i18n.language);
-  const currentFlag = i18n.language === 'en' ? '🇺🇸' : '🇪🇸';
-
   return (
     <Dropdown
       menu={{

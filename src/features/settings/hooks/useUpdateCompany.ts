@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { companyService } from '../../../services';
-import { UpdateCompanyDto } from '../../../types';
+import type { UpdateCompanyDto } from '../../../types';
 
 interface UpdateCompanyParams {
   id: string;
