@@ -11,13 +11,14 @@ interface UseInvoiceItemsProps {
 
 export const useInvoiceItems = ({ initialItems }: UseInvoiceItemsProps = {}) => {
     const [items, setItems] = useState<InvoiceFormItem[]>([
-        { id: crypto.randomUUID(), description: '', quantity: 1, price: 0 }
+        { id: crypto.randomUUID(), name: '', description: '', quantity: 1, price: 0 }
     ]);
 
     useEffect(() => {
         if (initialItems && initialItems.length > 0) {
             setItems(initialItems.map(item => ({
                 id: crypto.randomUUID(),
+                name: item.name,
                 description: item.description,
                 quantity: item.quantity,
                 price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
@@ -28,6 +29,7 @@ export const useInvoiceItems = ({ initialItems }: UseInvoiceItemsProps = {}) => 
     const addItem = () => {
         setItems([...items, {
             id: crypto.randomUUID(),
+            name: '',
             description: '',
             quantity: 1,
             price: 0
@@ -53,10 +55,10 @@ export const useInvoiceItems = ({ initialItems }: UseInvoiceItemsProps = {}) => 
     const validateItems = () => {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            if (!item.description.trim()) {
+            if (!item.name.trim()) {
                 return false;
             }
-            if (item.quantity < 1) {
+            if (item.quantity < 0) {
                 return false;
             }
             if (item.price < 0) {

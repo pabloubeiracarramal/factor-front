@@ -43,10 +43,15 @@ export default function ModifyInvoicePage() {
       description: invoice.description,
       dueDate: dayjs(invoice.dueDate),
       status: invoice.status,
+      paymentMethod: invoice.paymentMethod || undefined,
+      observations: invoice.observations || undefined,
       items: invoice.items?.map(item => ({
-        ...item,
+        name: item.name,
+        description: item.description || undefined,
+        quantity: item.quantity,
         price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
-      })) || [{ description: '', quantity: 1, price: 0 }],
+        taxRate: item.taxRate,
+      })) || [{ name: '', description: '', quantity: 1, price: 0 }],
     };
   }, [invoice]);
 
@@ -71,9 +76,12 @@ export default function ModifyInvoicePage() {
         clientId: values.clientId,
         dueDate: values.dueDate.toISOString(),
         status: values.status,
+        paymentMethod: values.paymentMethod || undefined,
+        observations: values.observations?.trim() || undefined,
         description: values.description,
         items: values.items.map((item: any) => ({
-          description: item.description,
+          name: item.name,
+          description: item.description?.trim() || undefined,
           quantity: Number(item.quantity) || 0,
           price: Number(item.price) || 0,
           taxRate: Number(item.taxRate) || 0,

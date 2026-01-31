@@ -18,6 +18,7 @@ export default function CreateCompanyPage() {
     state: '',
     country: '',
     vatNumber: '',
+    bankAccountNumber: '',
     adminEmail: user?.email || '',
     adminName: user?.name || '',
   });
@@ -61,6 +62,7 @@ export default function CreateCompanyPage() {
         state: formData.state?.trim() || undefined,
         country: formData.country?.trim() || undefined,
         vatNumber: formData.vatNumber?.trim() || undefined,
+        bankAccountNumber: formData.bankAccountNumber?.trim() || undefined,
         adminEmail: formData.adminEmail.trim(),
         adminName: formData.adminName.trim(),
       });
@@ -319,6 +321,37 @@ export default function CreateCompanyPage() {
               value={formData.vatNumber}
               onChange={handleChange}
               placeholder={t('company.vatNumberPlaceholder')}
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: 'var(--spacing-sm) var(--spacing-md)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '1rem',
+                transition: 'border-color 0.2s',
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+            <label 
+              htmlFor="bankAccountNumber" 
+              style={{ 
+                display: 'block',
+                marginBottom: 'var(--spacing-sm)',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+              }}
+            >
+              {t('company.bankAccountNumber')}
+            </label>
+            <input
+              id="bankAccountNumber"
+              name="bankAccountNumber"
+              type="text"
+              value={formData.bankAccountNumber}
+              onChange={handleChange}
+              placeholder={t('company.bankAccountNumberPlaceholder')}
               disabled={isLoading}
               style={{
                 width: '100%',

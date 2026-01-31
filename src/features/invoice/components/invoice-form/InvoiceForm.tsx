@@ -38,6 +38,14 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
     USD: '$',
 };
 
+const PAYMENT_METHOD_OPTIONS = [
+    { value: 'BANK_TRANSFER', labelKey: 'invoice.paymentMethods.BANK_TRANSFER' },
+    { value: 'CASH', labelKey: 'invoice.paymentMethods.CASH' },
+    { value: 'CREDIT_CARD', labelKey: 'invoice.paymentMethods.CREDIT_CARD' },
+    { value: 'PAYPAL', labelKey: 'invoice.paymentMethods.PAYPAL' },
+    { value: 'OTHER', labelKey: 'invoice.paymentMethods.OTHER' },
+];
+
 export default function InvoiceForm({
     form,
     initialValues
@@ -145,7 +153,7 @@ export default function InvoiceForm({
             </Row>
 
             <Row gutter={16}>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={6}>
                     <Form.Item
                         label={t('invoice.operationDate')}
                         name="operationDate"
@@ -153,7 +161,7 @@ export default function InvoiceForm({
                         <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.operationDatePlaceholder')} />
                     </Form.Item>
                 </Col>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={6}>
                     <Form.Item
                         label={t('invoice.dueDate')}
                         name="dueDate"
@@ -162,7 +170,7 @@ export default function InvoiceForm({
                         <DatePicker style={{ width: '100%' }} size="large" />
                     </Form.Item>
                 </Col>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={6}>
                     <Form.Item
                         label={t('invoice.status')}
                         name="status"
@@ -174,7 +182,38 @@ export default function InvoiceForm({
                         </Select>
                     </Form.Item>
                 </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                        label={t('invoice.paymentMethod')}
+                        name="paymentMethod"
+                    >
+                        <Select 
+                            size="large" 
+                            placeholder={t('invoice.paymentMethodPlaceholder')}
+                            allowClear
+                        >
+                            {PAYMENT_METHOD_OPTIONS.map(option => (
+                                <Select.Option key={option.value} value={option.value}>
+                                    {t(option.labelKey)}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </Col>
             </Row>
+
+            <Form.Item
+                label={t('invoice.observations')}
+                name="observations"
+            >
+                <Input.TextArea
+                    size="large"
+                    placeholder={t('invoice.observationsPlaceholder')}
+                    rows={3}
+                    maxLength={1000}
+                    showCount
+                />
+            </Form.Item>
 
             <Divider>{t('invoice.items')}</Divider>
 
@@ -196,12 +235,12 @@ export default function InvoiceForm({
                             <div key={field.key} style={{ marginBottom: 16 }}>
                                 <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                                     <Form.Item
-                                        name={[field.name, 'description']}
-                                        rules={[{ required: true, message: t('invoice.validation.descriptionRequired') }]}
+                                        name={[field.name, 'name']}
+                                        rules={[{ required: true, message: t('invoice.validation.nameRequired') }]}
                                         style={{ flex: 1, marginBottom: 0 }}
                                     >
                                         <Input
-                                            placeholder={t('invoice.descriptionPlaceholder')}
+                                            placeholder={t('invoice.itemNamePlaceholder')}
                                             size="large"
                                         />
                                     </Form.Item>
@@ -212,7 +251,7 @@ export default function InvoiceForm({
                                             { 
                                                 validator: (_, value) => {
                                                     const num = Number(value);
-                                                    if (isNaN(num) || num < 1) {
+                                                    if (isNaN(num) || num < 0) {
                                                         return Promise.reject(new Error(t('invoice.validation.quantityRequired')));
                                                     }
                                                     return Promise.resolve();
@@ -224,7 +263,7 @@ export default function InvoiceForm({
                                     >
                                         <InputNumber
                                             placeholder={t('invoice.quantity')}
-                                            min={1}
+                                            min={0}
                                             style={{ width: 100 }}
                                             size="large"
                                         />
@@ -288,12 +327,22 @@ export default function InvoiceForm({
                                         size="large"
                                     />
                                 </div>
+                                <Form.Item
+                                    name={[field.name, 'description']}
+                                    style={{ marginTop: 8, marginBottom: 0 }}
+                                >
+                                    <Input.TextArea
+                                        placeholder={t('invoice.itemDescriptionPlaceholder')}
+                                        rows={2}
+                                        maxLength={500}
+                                    />
+                                </Form.Item>
                             </div>
                         ))}
 
                         <Button
                             type="dashed"
-                            onClick={() => add({ description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE })}
+                            onClick={() => add({ name: '', description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE })}
                             icon={<PlusOutlined />}
                             style={{ width: '100%', marginBottom: 24 }}
                             size="large"

@@ -38,7 +38,7 @@ export default function CreateInvoicePage() {
       currency: DEFAULT_CURRENCY,
       emissionDate: dayjs(),
       dueDate: dayjs().add(30, 'days'),
-      items: [{ description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE }],
+      items: [{ name: '', description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE }],
     });
   }, [form]);
 
@@ -59,8 +59,11 @@ export default function CreateInvoicePage() {
         reference: values.reference?.trim() || undefined,
         currency: values.currency,
         status: values.status || 'PENDING',
+        paymentMethod: values.paymentMethod || undefined,
+        observations: values.observations?.trim() || undefined,
         items: values.items.map((item: any) => ({
-          description: item.description,
+          name: item.name,
+          description: item.description?.trim() || undefined,
           quantity: Number(item.quantity) || 0,
           price: Number(item.price) || 0,
           taxRate: Number(item.taxRate) || 0,

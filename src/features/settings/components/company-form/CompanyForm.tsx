@@ -42,7 +42,8 @@ export default function CompanyForm({ company }: CompanyFormProps) {
           postalCode: company.postalCode,
           state: company.state,
           country: company.country,
-          vatNumber: company.vatNumber
+          vatNumber: company.vatNumber,
+          bankAccountNumber: company.bankAccountNumber
         }}
       >
         <Form.Item
@@ -121,6 +122,13 @@ export default function CompanyForm({ company }: CompanyFormProps) {
           name="vatNumber"
         >
           <Input placeholder={t('settings.company.vatNumberPlaceholder')} disabled={!isAdmin} />
+        </Form.Item>
+
+        <Form.Item
+          label={t('settings.company.bankAccountNumber')}
+          name="bankAccountNumber"
+        >
+          <Input placeholder={t('settings.company.bankAccountNumberPlaceholder')} disabled={!isAdmin} />
         </Form.Item>
 
         <Form.Item>

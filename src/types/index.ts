@@ -1,3 +1,6 @@
+// Payment Method
+export type PaymentMethod = 'BANK_TRANSFER' | 'CASH' | 'CREDIT_CARD' | 'PAYPAL' | 'OTHER';
+
 // User
 export interface User {
   id: string;
@@ -24,6 +27,7 @@ export interface Company {
   state: string | null;
   country: string | null;
   vatNumber: string | null;
+  bankAccountNumber: string | null;
   createdAt: string;
   updatedAt: string;
   users?: User[];
@@ -57,6 +61,8 @@ export interface Invoice {
   client: Client;
   description: string | null;
   status: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  paymentMethod?: PaymentMethod | null;
+  observations?: string | null;
   dueDate: string;
   emissionDate: string;
   operationDate: string;
@@ -70,7 +76,8 @@ export interface Invoice {
 // Invoice Item
 export interface InvoiceItem {
   id: string;
-  description: string;
+  name: string;
+  description?: string | null;
   quantity: number;
   price: string;
   taxRate: number;
@@ -86,6 +93,7 @@ export interface CreateCompanyDto {
   state?: string;
   country?: string;
   vatNumber?: string;
+  bankAccountNumber?: string;
   adminEmail: string;
   adminName: string;
 }
@@ -100,6 +108,7 @@ export interface UpdateCompanyDto {
   state?: string;
   country?: string;
   vatNumber?: string;
+  bankAccountNumber?: string;
 }
 
 export interface CreateUserDto {
@@ -123,11 +132,14 @@ export interface CreateInvoiceDto {
   reference?: string;
   currency?: string;
   status?: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  paymentMethod?: PaymentMethod;
+  observations?: string;
   items: CreateInvoiceItemDto[];
 }
 
 export interface CreateInvoiceItemDto {
-  description: string;
+  name: string;
+  description?: string;
   quantity: number;
   price: number;
   taxRate?: number;
@@ -137,6 +149,8 @@ export interface UpdateInvoiceDto {
   invoiceNumber?: string;
   clientId?: string;
   status?: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  paymentMethod?: PaymentMethod;
+  observations?: string;
   dueDate?: string;
   emissionDate?: string;
   operationDate?: string;
