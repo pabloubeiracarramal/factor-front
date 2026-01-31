@@ -1,0 +1,344 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+    Form,
+    Input,
+    Select,
+    DatePicker,
+    Button,
+    InputNumber,
+    Divider,
+    Card,
+    Statistic,
+    Row,
+    Col,
+    type FormInstance
+} from 'antd';
+import {
+    PlusOutlined,
+    DeleteOutlined
+} from '@ant-design/icons';
+import { useClients } from '../../hooks';
+
+interface InvoiceFormProps {
+    form: FormInstance;
+    initialValues?: Record<string, any>;
+}
+
+const DEFAULT_CURRENCY = 'EUR';
+const DEFAULT_TAX_RATE = 21.0;
+
+const CURRENCY_OPTIONS = [
+    { label: 'EUR (€)', value: 'EUR' },
+    { label: 'USD ($)', value: 'USD' },
+];
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    EUR: '€',
+    USD: '$',
+};
+
+export default function InvoiceForm({
+    form,
+    initialValues
+}: InvoiceFormProps) {
+    const { t } = useTranslation();
+    const { clientOptions } = useClients();
+    const items = Form.useWatch('items', form);
+    const currency = Form.useWatch('currency', form) || DEFAULT_CURRENCY;
+
+    const currencySymbol = CURRENCY_SYMBOLS[currency] || currency;
+
+    const { subtotal, totalTax, total } = useMemo(() => {
+        if (!items || !Array.isArray(items)) return { subtotal: 0, totalTax: 0, total: 0 };
+        
+        let subtotal = 0;
+        let totalTax = 0;
+
+        items.forEach((item: any) => {
+            const quantity = item?.quantity || 0;
+            const price = item?.price || 0;
+            const taxRate = item?.taxRate || 0;
+            
+            const itemSubtotal = quantity * price;
+            const itemTax = itemSubtotal * (taxRate / 100);
+            
+            subtotal += itemSubtotal;
+            totalTax += itemTax;
+        });
+
+        return {
+            subtotal,
+            totalTax,
+            total: subtotal + totalTax
+        };
+    }, [items]);
+
+    return (
+        <Form
+            form={form}
+            layout="vertical"
+            initialValues={initialValues}
+        >
+            <Form.Item
+                label={t('invoice.clientName')}
+                name="clientId"
+                rules={[{ required: true, message: t('invoice.validation.clientNameRequired') }]}
+            >
+                <Select
+                    showSearch
+                    size="large"
+                    placeholder={t('invoice.clientNamePlaceholder')}
+                    options={clientOptions}
+                />
+            </Form.Item>
+
+            <Form.Item
+                label={t('invoice.description')}
+                name="description"
+            >
+                <Input.TextArea
+                    size="large"
+                    placeholder={t('invoice.descriptionPlaceholder')}
+                    rows={3}
+                    maxLength={500}
+                    showCount
+                />
+            </Form.Item>
+
+            <Row gutter={16}>
+                <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                        label={t('invoice.invoiceSeries')}
+                        name="invoiceSeries"
+                        rules={[{ required: true, message: t('invoice.validation.invoiceSeriesRequired') }]}
+                    >
+                        <Input size="large" placeholder={t('invoice.invoiceSeriesPlaceholder')} />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                        label={t('invoice.reference')}
+                        name="reference"
+                    >
+                        <Input size="large" placeholder={t('invoice.referencePlaceholder')} />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                        label={t('invoice.currency')}
+                        name="currency"
+                        rules={[{ required: true, message: t('invoice.validation.currencyRequired') }]}
+                    >
+                        <Select size="large" placeholder={t('invoice.currencyPlaceholder')} options={CURRENCY_OPTIONS} />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                        label={t('invoice.emissionDate')}
+                        name="emissionDate"
+                        rules={[{ required: true, message: t('invoice.validation.emissionDateRequired') }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} />
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Row gutter={16}>
+                <Col xs={24} sm={12} md={8}>
+                    <Form.Item
+                        label={t('invoice.operationDate')}
+                        name="operationDate"
+                    >
+                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.operationDatePlaceholder')} />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Form.Item
+                        label={t('invoice.dueDate')}
+                        name="dueDate"
+                        rules={[{ required: true, message: t('invoice.validation.dueDateRequired') }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} size="large" />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Form.Item
+                        label={t('invoice.status')}
+                        name="status"
+                    >
+                        <Select size="large">
+                            <Select.Option value="PENDING">{t('invoice.pending')}</Select.Option>
+                            <Select.Option value="PAID">{t('invoice.paid')}</Select.Option>
+                            <Select.Option value="OVERDUE">{t('invoice.overdue')}</Select.Option>
+                        </Select>
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Divider>{t('invoice.items')}</Divider>
+
+            <Form.List
+                name="items"
+                rules={[
+                    {
+                        validator: async (_, items) => {
+                            if (!items || items.length === 0) {
+                                return Promise.reject(new Error(t('invoice.validation.itemsRequired')));
+                            }
+                        },
+                    },
+                ]}
+            >
+                {(fields, { add, remove }) => (
+                    <>
+                        {fields.map((field) => (
+                            <div key={field.key} style={{ marginBottom: 16 }}>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                    <Form.Item
+                                        name={[field.name, 'description']}
+                                        rules={[{ required: true, message: t('invoice.validation.descriptionRequired') }]}
+                                        style={{ flex: 1, marginBottom: 0 }}
+                                    >
+                                        <Input
+                                            placeholder={t('invoice.descriptionPlaceholder')}
+                                            size="large"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={[field.name, 'quantity']}
+                                        rules={[
+                                            { required: true, message: t('invoice.validation.quantityRequired') },
+                                            { 
+                                                validator: (_, value) => {
+                                                    const num = Number(value);
+                                                    if (isNaN(num) || num < 1) {
+                                                        return Promise.reject(new Error(t('invoice.validation.quantityRequired')));
+                                                    }
+                                                    return Promise.resolve();
+                                                }
+                                            }
+                                        ]}
+                                        normalize={(value) => value ? Number(value) : value}
+                                        style={{ marginBottom: 0 }}
+                                    >
+                                        <InputNumber
+                                            placeholder={t('invoice.quantity')}
+                                            min={1}
+                                            style={{ width: 100 }}
+                                            size="large"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={[field.name, 'price']}
+                                        rules={[
+                                            { required: true, message: t('invoice.validation.priceRequired') },
+                                            { 
+                                                validator: (_, value) => {
+                                                    const num = Number(value);
+                                                    if (isNaN(num) || num < 0) {
+                                                        return Promise.reject(new Error(t('invoice.validation.priceRequired')));
+                                                    }
+                                                    return Promise.resolve();
+                                                }
+                                            }
+                                        ]}
+                                        normalize={(value) => value ? Number(value) : value}
+                                        style={{ marginBottom: 0 }}
+                                    >
+                                        <InputNumber
+                                            placeholder={t('invoice.price')}
+                                            min={0}
+                                            prefix={currencySymbol}
+                                            style={{ width: 140 }}
+                                            size="large"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={[field.name, 'taxRate']}
+                                        rules={[
+                                            { required: true, message: t('invoice.validation.taxRateRequired') },
+                                            { 
+                                                validator: (_, value) => {
+                                                    const num = Number(value);
+                                                    if (isNaN(num) || num < 0 || num > 100) {
+                                                        return Promise.reject(new Error(t('invoice.validation.taxRateRequired')));
+                                                    }
+                                                    return Promise.resolve();
+                                                }
+                                            }
+                                        ]}
+                                        normalize={(value) => value ? Number(value) : value}
+                                        style={{ marginBottom: 0 }}
+                                    >
+                                        <InputNumber
+                                            placeholder={t('invoice.taxRatePlaceholder')}
+                                            min={0}
+                                            max={100}
+                                            suffix="%"
+                                            style={{ width: 100 }}
+                                            size="large"
+                                        />
+                                    </Form.Item>
+                                    <Button
+                                        danger
+                                        icon={<DeleteOutlined />}
+                                        onClick={() => remove(field.name)}
+                                        disabled={fields.length === 1}
+                                        size="large"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+
+                        <Button
+                            type="dashed"
+                            onClick={() => add({ description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE })}
+                            icon={<PlusOutlined />}
+                            style={{ width: '100%', marginBottom: 24 }}
+                            size="large"
+                        >
+                            {t('invoice.addItem')}
+                        </Button>
+                    </>
+                )}
+            </Form.List>
+
+            <Card
+                style={{ marginBottom: 32 }}
+                styles={{ body: { textAlign: 'right' } }}
+            >
+                <Row gutter={16}>
+                    <Col span={24}>
+                        <Statistic
+                            title={t('invoice.subtotal')}
+                            value={subtotal}
+                            precision={2}
+                            prefix={currencySymbol}
+                        />
+                    </Col>
+                    <Col span={24}>
+                        <Statistic
+                            title={t('invoice.tax')}
+                            value={totalTax}
+                            precision={2}
+                            prefix={currencySymbol}
+                        />
+                    </Col>
+                    <Col span={24}>
+                        <Divider style={{ margin: '12px 0' }} />
+                        <Statistic
+                            title={t('invoice.total')}
+                            value={total}
+                            precision={2}
+                            prefix={currencySymbol}
+                            styles={{
+                                content: { fontSize: '1.5rem', fontWeight: 600 }
+                            }}
+                        />
+                    </Col>
+                </Row>
+            </Card>
+        </Form>
+    );
+}
