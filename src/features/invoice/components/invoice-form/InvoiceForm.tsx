@@ -187,11 +187,11 @@ export default function InvoiceForm({
                     <Form.Item
                         label={t('invoice.paymentMethod')}
                         name="paymentMethod"
+                        rules={[{ required: true }]}
                     >
                         <Select 
                             size="large" 
                             placeholder={t('invoice.paymentMethodPlaceholder')}
-                            allowClear
                         >
                             {PAYMENT_METHOD_OPTIONS.map(option => (
                                 <Select.Option key={option.value} value={option.value}>

@@ -190,6 +190,7 @@ export const useInvoicesTableColumns = ({
               <Button
                 type="text"
                 icon={<FilePdfOutlined />}
+                disabled={record.status === 'DRAFT'}
                 onClick={() => handleDownloadPDF(record)}
               />
             </Tooltip>
