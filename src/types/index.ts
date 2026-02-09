@@ -60,9 +60,10 @@ export interface Invoice {
   clientId: string;
   client: Client;
   description: string | null;
-  status: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  status: 'DRAFT' | 'PENDING' | 'PAID';
   paymentMethod?: PaymentMethod | null;
   observations?: string | null;
+  dueDays: number;
   dueDate: string;
   emissionDate: string;
   operationDate: string;
@@ -125,13 +126,13 @@ export interface UpdateUserDto {
 export interface CreateInvoiceDto {
   clientId: string;
   description?: string;
-  dueDate: string;
+  dueDays?: number;
   emissionDate?: string;
   operationDate?: string;
   invoiceSeries?: string;
   reference?: string;
   currency?: string;
-  status?: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  status?: 'DRAFT' | 'PENDING' | 'PAID';
   paymentMethod?: PaymentMethod;
   observations?: string;
   items: CreateInvoiceItemDto[];
@@ -148,10 +149,10 @@ export interface CreateInvoiceItemDto {
 export interface UpdateInvoiceDto {
   invoiceNumber?: string;
   clientId?: string;
-  status?: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  status?: 'DRAFT' | 'PENDING' | 'PAID';
   paymentMethod?: PaymentMethod;
   observations?: string;
-  dueDate?: string;
+  dueDays?: number;
   emissionDate?: string;
   operationDate?: string;
   invoiceSeries?: string;
@@ -194,7 +195,7 @@ export interface MonthlyRevenue {
 
 // Invoice Query Filters
 export interface InvoiceQueryParams {
-  status?: 'DRAFT' | 'PENDING' | 'PAID' | 'OVERDUE';
+  status?: 'DRAFT' | 'PENDING' | 'PAID';
   dateFrom?: string;
   dateTo?: string;
   priceMin?: number;

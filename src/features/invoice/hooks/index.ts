@@ -4,6 +4,8 @@ export { useInvoicesTableColumns } from './useInvoicesTableColumns';
 export { useInvoicePdfActions } from './useInvoicePdfActions';
 export { useUpdateInvoice } from './useUpdateInvoice';
 export { useDeleteInvoice } from './useDeleteInvoice';
+export { useConfirmInvoice } from './useConfirmInvoice';
+export { usePayInvoice } from './usePayInvoice';
 export { useInvoiceItems } from './useInvoiceItems';
 export { useClients } from './useClients';
 export { useCreateInvoice } from './useCreateInvoice';

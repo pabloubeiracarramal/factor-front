@@ -14,6 +14,12 @@ export const invoiceService = {
   update: (id: string, data: UpdateInvoiceDto) => 
     api.patch<Invoice>(`/invoices/${id}`, data),
   
+  confirm: (id: string) =>
+    api.patch<Invoice>(`/invoices/${id}/confirm`),
+  
+  pay: (id: string) =>
+    api.patch<Invoice>(`/invoices/${id}/pay`),
+  
   remove: (id: string) => 
     api.delete(`/invoices/${id}`),
   

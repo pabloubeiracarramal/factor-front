@@ -12,7 +12,6 @@ import {
   ArrowLeftOutlined,
   SaveOutlined
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import AppHeader from '../../../components/AppHeader';
 import type { CreateInvoiceDto } from '../../../types';
 import PageHeader from '../../../components/PageHeader';
@@ -33,11 +32,10 @@ export default function CreateInvoicePage() {
 
   useEffect(() => {
     form.setFieldsValue({
-      status: 'PENDING',
+      status: 'DRAFT',
       invoiceSeries: CURRENT_YEAR,
       currency: DEFAULT_CURRENCY,
-      emissionDate: dayjs(),
-      dueDate: dayjs().add(30, 'days'),
+      dueDays: 30,
       items: [{ name: '', description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE }],
     });
   }, [form]);
@@ -52,13 +50,12 @@ export default function CreateInvoicePage() {
       const invoiceData: CreateInvoiceDto = {
         clientId: values.clientId,
         description: values.description?.trim() || undefined,
-        dueDate: values.dueDate.toISOString(),
-        emissionDate: values.emissionDate?.toISOString(),
+        dueDays: Number(values.dueDays) || 30,
         operationDate: values.operationDate?.toISOString(),
         invoiceSeries: values.invoiceSeries?.trim(),
         reference: values.reference?.trim() || undefined,
         currency: values.currency,
-        status: values.status || 'PENDING',
+        status: 'DRAFT',
         paymentMethod: values.paymentMethod || undefined,
         observations: values.observations?.trim() || undefined,
         items: values.items.map((item: any) => ({
@@ -99,6 +96,7 @@ export default function CreateInvoicePage() {
 
           <InvoiceForm
             form={form}
+            disableInvoiceSeries
           />
           
           <Space size="large" style={{ marginTop: 24 }}>
@@ -109,7 +107,7 @@ export default function CreateInvoicePage() {
               icon={<SaveOutlined />}
               size="large"
             >
-              {t('invoice.createButton')}
+              {t('invoice.saveDraft')}
             </Button>
             <Button 
               onClick={() => navigate('/invoices')}

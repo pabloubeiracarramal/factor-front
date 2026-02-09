@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Tag, Button, Tooltip, Space } from 'antd';
-import { EyeOutlined, FilePdfOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, FilePdfOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, DollarOutlined, WarningOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { InvoiceQueryParams, Invoice } from '../../../types';
 import {
@@ -19,6 +19,8 @@ type UseInvoicesTableColumnsParams = {
   handleDownloadPDF: (invoice: Invoice) => void;
   handleEditInvoice: (invoice: Invoice) => void;
   handleDeleteInvoice: (invoiceNumber: string, invoiceId: string) => void;
+  handleConfirmInvoice: (invoice: Invoice) => void;
+  handlePayInvoice: (invoice: Invoice) => void;
   clientOptions: Array<{ label: string; value: string }>;
 };
 
@@ -29,6 +31,8 @@ export const useInvoicesTableColumns = ({
   handleDownloadPDF,
   handleEditInvoice,
   handleDeleteInvoice,
+  handleConfirmInvoice,
+  handlePayInvoice,
   clientOptions,
 }: UseInvoicesTableColumnsParams) => {
   const { t, i18n } = useTranslation();
@@ -48,13 +52,19 @@ export const useInvoicesTableColumns = ({
     switch (status) {
       case 'PAID':
         return 'success';
-      case 'OVERDUE':
-        return 'error';
       case 'DRAFT':
         return 'warning';
+      case 'PENDING':
+        return 'default';
+      case 'OVERDUE':
+        return 'error';
       default:
         return 'default';
     }
+  };
+
+  const isOverdue = (record: Invoice) => {
+    return record.status === 'PENDING' && new Date(record.dueDate) < new Date();
   };
 
   return useMemo(
@@ -64,7 +74,9 @@ export const useInvoicesTableColumns = ({
         dataIndex: 'invoiceNumber',
         key: 'invoiceNumber',
         render: (_: string, record: Invoice) => (
-          <strong>{record.invoiceSeries}-{record.invoiceNumber}</strong>
+          record.status === 'DRAFT'
+            ? <span style={{ color: '#999', fontStyle: 'italic' }}>{t('invoice.draft')}</span>
+            : <strong>{record.invoiceSeries}-{record.invoiceNumber}</strong>
         ),
       },
       {
@@ -102,18 +114,22 @@ export const useInvoicesTableColumns = ({
         title: t('dashboard.status'),
         dataIndex: 'status',
         key: 'status',
-        render: (status: string) => (
-          <Tag color={getStatusColor(status)}>
-            {t(`status.${status}`)}
-          </Tag>
-        ),
+        render: (_: string, record: Invoice) => {
+          const overdue = isOverdue(record);
+          const displayStatus = overdue ? 'OVERDUE' : record.status;
+          return (
+            <Tag color={getStatusColor(displayStatus)}>
+              {t(`status.${displayStatus}`)}
+            </Tag>
+          );
+        },
         ...createStatusFilter(
           filters,
           handleFilterChange,
           t('dashboard.selectStatus'),
           [
             { label: t('status.PAID'), value: 'PAID' },
-            { label: t('status.OVERDUE'), value: 'OVERDUE' },
+            { label: t('status.PENDING'), value: 'PENDING' },
             { label: t('status.DRAFT'), value: 'DRAFT' },
           ]
         ),
@@ -122,11 +138,16 @@ export const useInvoicesTableColumns = ({
         title: t('dashboard.dueDate'),
         dataIndex: 'dueDate',
         key: 'dueDate',
-        render: (date: string, record: Invoice) => {
-          const isOverdue = record.status === 'OVERDUE';
+        render: (_: string, record: Invoice) => {
+          const overdue = isOverdue(record);
           return (
-            <span style={{ color: isOverdue ? '#ff4d4f' : undefined, fontWeight: isOverdue ? 600 : 400 }}>
-              {formatDate(date)}
+            <span style={overdue ? { color: '#ff4d4f' } : undefined}>
+              {formatDate(record.dueDate)}
+              {overdue && (
+                <Tooltip title={t('status.overdue')}>
+                  <WarningOutlined style={{ color: '#ff4d4f', marginLeft: 6 }} />
+                </Tooltip>
+              )}
             </span>
           );
         },
@@ -134,9 +155,30 @@ export const useInvoicesTableColumns = ({
       },
       {
         key: 'actions',
-        width: 200,
+        width: 240,
         render: (_: any, record: Invoice) => (
-          <Space size="small">
+          <Space size="small" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+
+            {record.status === 'DRAFT' && (
+              <Tooltip title={t('invoices.confirmInvoice')}>
+                <Button
+                  type="text"
+                  style={{ color: '#52c41a' }}
+                  icon={<CheckCircleOutlined />}
+                  onClick={() => handleConfirmInvoice(record)}
+                />
+              </Tooltip>
+            )}
+            {record.status === 'PENDING' && (
+              <Tooltip title={t('invoices.payInvoice')}>
+                <Button
+                  type="text"
+                  style={{ color: '#1677ff' }}
+                  icon={<DollarOutlined />}
+                  onClick={() => handlePayInvoice(record)}
+                />
+              </Tooltip>
+            )}
             <Tooltip title={t('dashboard.previewPDF')}>
               <Button
                 type="text"
@@ -155,6 +197,7 @@ export const useInvoicesTableColumns = ({
               <Button
                 type="text"
                 icon={<EditOutlined />}
+                disabled={record.status !== 'DRAFT'}
                 onClick={() => handleEditInvoice(record)}
               />
             </Tooltip>
@@ -163,6 +206,7 @@ export const useInvoicesTableColumns = ({
                 type="text"
                 danger
                 icon={<DeleteOutlined />}
+                disabled={record.status !== 'DRAFT'}
                 onClick={() => handleDeleteInvoice(record.invoiceNumber, record.id)}
               />
             </Tooltip>
@@ -170,6 +214,6 @@ export const useInvoicesTableColumns = ({
         ),
       },
     ],
-    [t, i18n.language, filters, handleFilterChange, handlePreviewPDF, handleDownloadPDF, handleEditInvoice, handleDeleteInvoice]
+    [t, i18n.language, filters, handleFilterChange, handlePreviewPDF, handleDownloadPDF, handleEditInvoice, handleDeleteInvoice, handleConfirmInvoice, handlePayInvoice]
   );
 };

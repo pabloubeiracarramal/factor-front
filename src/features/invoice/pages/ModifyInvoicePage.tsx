@@ -36,12 +36,11 @@ export default function ModifyInvoicePage() {
     return {
       invoiceSeries: invoice.invoiceSeries || new Date().getFullYear().toString(),
       reference: invoice.reference || undefined,
-      emissionDate: invoice.emissionDate ? dayjs(invoice.emissionDate) : dayjs(),
       operationDate: invoice.operationDate ? dayjs(invoice.operationDate) : undefined,
       currency: invoice.currency || 'EUR',
       clientId: invoice.clientId,
       description: invoice.description,
-      dueDate: dayjs(invoice.dueDate),
+      dueDays: invoice.dueDays || 30,
       status: invoice.status,
       paymentMethod: invoice.paymentMethod || undefined,
       observations: invoice.observations || undefined,
@@ -70,11 +69,10 @@ export default function ModifyInvoicePage() {
       const invoiceData: UpdateInvoiceDto = {
         invoiceSeries: values.invoiceSeries,
         reference: values.reference?.trim() || undefined,
-        emissionDate: values.emissionDate ? values.emissionDate.toISOString() : undefined,
         operationDate: values.operationDate ? values.operationDate.toISOString() : undefined,
         currency: values.currency,
         clientId: values.clientId,
-        dueDate: values.dueDate.toISOString(),
+        dueDays: Number(values.dueDays) || 30,
         status: values.status,
         paymentMethod: values.paymentMethod || undefined,
         observations: values.observations?.trim() || undefined,
@@ -145,6 +143,7 @@ export default function ModifyInvoicePage() {
 
           <InvoiceForm
             form={form}
+            disableInvoiceSeries
           />
           
           <Space size="large" style={{ marginTop: 24 }}>

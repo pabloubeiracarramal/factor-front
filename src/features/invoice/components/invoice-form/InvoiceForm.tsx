@@ -23,6 +23,7 @@ import { useClients } from '../../hooks';
 interface InvoiceFormProps {
     form: FormInstance;
     initialValues?: Record<string, any>;
+    disableInvoiceSeries?: boolean;
 }
 
 const DEFAULT_CURRENCY = 'EUR';
@@ -48,7 +49,8 @@ const PAYMENT_METHOD_OPTIONS = [
 
 export default function InvoiceForm({
     form,
-    initialValues
+    initialValues,
+    disableInvoiceSeries = false,
 }: InvoiceFormProps) {
     const { t } = useTranslation();
     const { clientOptions } = useClients();
@@ -121,7 +123,7 @@ export default function InvoiceForm({
                         name="invoiceSeries"
                         rules={[{ required: true, message: t('invoice.validation.invoiceSeriesRequired') }]}
                     >
-                        <Input size="large" placeholder={t('invoice.invoiceSeriesPlaceholder')} />
+                        <Input size="large" placeholder={t('invoice.invoiceSeriesPlaceholder')} disabled={disableInvoiceSeries} />
                     </Form.Item>
                 </Col>
                 <Col xs={24} sm={12} md={6}>
@@ -145,9 +147,8 @@ export default function InvoiceForm({
                     <Form.Item
                         label={t('invoice.emissionDate')}
                         name="emissionDate"
-                        rules={[{ required: true, message: t('invoice.validation.emissionDateRequired') }]}
                     >
-                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} />
+                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} disabled={disableInvoiceSeries} />
                     </Form.Item>
                 </Col>
             </Row>
@@ -163,11 +164,11 @@ export default function InvoiceForm({
                 </Col>
                 <Col xs={24} sm={12} md={6}>
                     <Form.Item
-                        label={t('invoice.dueDate')}
-                        name="dueDate"
-                        rules={[{ required: true, message: t('invoice.validation.dueDateRequired') }]}
+                        label={t('invoice.dueDays')}
+                        name="dueDays"
+                        rules={[{ required: true, message: t('invoice.validation.dueDaysRequired') }]}
                     >
-                        <DatePicker style={{ width: '100%' }} size="large" />
+                        <InputNumber style={{ width: '100%' }} size="large" min={1} addonAfter={t('invoice.days')} />
                     </Form.Item>
                 </Col>
                 <Col xs={24} sm={12} md={6}>
@@ -175,10 +176,10 @@ export default function InvoiceForm({
                         label={t('invoice.status')}
                         name="status"
                     >
-                        <Select size="large">
+                        <Select size="large" disabled>
+                            <Select.Option value="DRAFT">{t('invoice.draft')}</Select.Option>
                             <Select.Option value="PENDING">{t('invoice.pending')}</Select.Option>
                             <Select.Option value="PAID">{t('invoice.paid')}</Select.Option>
-                            <Select.Option value="OVERDUE">{t('invoice.overdue')}</Select.Option>
                         </Select>
                     </Form.Item>
                 </Col>
