@@ -1,4 +1,9 @@
 {
+  "months": {
+    "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr",
+    "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Aug",
+    "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -142,6 +147,9 @@
     "viewAll": "View All",
     "createInvoice": "Create Invoice",
     "createCompany": "Create Company",
+    "monthlyRevenue": "Monthly Revenue",
+    "fromPaidInvoices": "From {{count}} paid invoices",
+    "unpaidInvoices": "unpaid invoices",
     "failedToLoad": "Failed to load dashboard data",
     "invoiceNumber": "Invoice #{{number}}",
     "searchClient": "Search by client name",

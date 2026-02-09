@@ -167,12 +167,12 @@ export interface DashboardStats {
   totalRevenue: number;
   outstandingAmount: number;
   invoiceCounts: {
+    total: number;
     paid: number;
     overdue: number;
     draft: number;
+    pending: number;
   };
-  recentInvoices: Invoice[];
-  overdueInvoices: Invoice[];
   topClients: TopClient[];
   monthlyRevenue: MonthlyRevenue[];
   teamStats: {
@@ -184,7 +184,6 @@ export interface DashboardStats {
 export interface TopClient {
   clientName: string;
   totalRevenue: number;
-  invoiceCount: number;
 }
 
 export interface MonthlyRevenue {

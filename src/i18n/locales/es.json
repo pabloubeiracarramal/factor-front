@@ -1,4 +1,9 @@
 {
+  "months": {
+    "jan": "Ene", "feb": "Feb", "mar": "Mar", "apr": "Abr",
+    "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Ago",
+    "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dic"
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",
@@ -141,6 +146,9 @@
     "viewAll": "Ver Todas",
     "createInvoice": "Crear Factura",
     "createCompany": "Crear Empresa",
+    "monthlyRevenue": "Ingresos Mensuales",
+    "fromPaidInvoices": "De {{count}} facturas pagadas",
+    "unpaidInvoices": "facturas sin pagar",
     "failedToLoad": "Error al cargar los datos del panel",
     "invoiceNumber": "Factura #{{number}}",
     "searchClient": "Buscar por nombre del cliente",

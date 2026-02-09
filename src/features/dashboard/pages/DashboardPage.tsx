@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout, Button, Alert, theme } from 'antd';
+import { Layout, Button, Alert, Row, Col, theme } from 'antd';
 import { useAuth } from '../../../contexts/AuthContext';
 import { invoiceService } from '../../../services/invoice.service';
 import AppHeader from '../../../components/AppHeader';
 import RecentInvoicesTable from '../components/recent-invoices-table/RecentInvoicesTable';
 import type { DashboardStats } from '../../../types';
 import OverviewRow from '../components/overview-row/OverviewRow';
+import MonthlyRevenueChart from '../components/monthly-revenue-chart/MonthlyRevenueChart';
 import PageHeader from '../../../components/PageHeader';
 
 const { Content } = Layout;
@@ -42,7 +43,7 @@ export default function DashboardPage() {
       <AppHeader />
 
       <Content style={{ padding: '24px', maxWidth: 1400, margin: '0 auto', width: '100%' }}>
-   
+
         <PageHeader
           title={t('dashboard.title')}
           subtitle={t('dashboard.welcome', { name: user?.name || '' })}
@@ -63,7 +64,18 @@ export default function DashboardPage() {
           />
         )}
 
-        <OverviewRow dashboard={dashboard} loading={loading} />
+        <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+          <Col xs={24} lg={10}>
+            <OverviewRow dashboard={dashboard} loading={loading} />
+          </Col>
+          <Col xs={24} lg={14}>
+            <MonthlyRevenueChart
+              data={dashboard?.monthlyRevenue || []}
+              loading={loading}
+            />
+          </Col>
+        </Row>
+
         <RecentInvoicesTable />
 
       </Content>
