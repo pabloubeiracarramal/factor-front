@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
       key: 'en',
       label: (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: '1.2rem' }}>🇺🇸</span>
+          <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>🇺🇸</span>
           <span>English</span>
         </div>
       ),
@@ -20,7 +20,7 @@ export default function LanguageSwitcher() {
       key: 'es',
       label: (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: '1.2rem' }}>🇪🇸</span>
+          <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}>🇪🇸</span>
           <span>Español</span>
         </div>
       ),

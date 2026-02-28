@@ -34,6 +34,8 @@ export default function InvoicesTable({ limit }: InvoicesTableProps) {
 
   const displayedInvoices = limit ? invoices.slice(0, limit) : invoices;
 
+  console.log('InvoicesTable rendered with filters:', displayedInvoices);
+
   const handleEditInvoice = (invoice: Invoice) => {
     navigate(`/invoices/${invoice.id}/edit`);
   };

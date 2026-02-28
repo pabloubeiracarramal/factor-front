@@ -19,7 +19,7 @@ export const createTextFilter = (
         placeholder={placeholder}
         value={filters[key]}
         onChange={(e) => handleFilterChange(key, e.target.value)}
-        style={{ width: 188, marginBottom: 8, display: 'block' }}
+        style={{ width: 188 }}
         prefix={<SearchOutlined />}
       />
     </div>
@@ -47,7 +47,6 @@ export const createDateRangeFilter = (
             handleFilterChange('dateTo', null);
           }
         }}
-        style={{ marginBottom: 8 }}
       />
     </div>
   ),

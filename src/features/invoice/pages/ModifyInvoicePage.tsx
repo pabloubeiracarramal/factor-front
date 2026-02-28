@@ -36,6 +36,7 @@ export default function ModifyInvoicePage() {
     return {
       invoiceSeries: invoice.invoiceSeries || new Date().getFullYear().toString(),
       reference: invoice.reference || undefined,
+      emissionDate: invoice.emissionDate ? dayjs(invoice.emissionDate) : undefined,
       operationDate: invoice.operationDate ? dayjs(invoice.operationDate) : undefined,
       currency: invoice.currency || 'EUR',
       clientId: invoice.clientId,
@@ -69,6 +70,7 @@ export default function ModifyInvoicePage() {
       const invoiceData: UpdateInvoiceDto = {
         invoiceSeries: values.invoiceSeries,
         reference: values.reference?.trim() || undefined,
+        emissionDate: values.emissionDate ? values.emissionDate.toISOString() : undefined,
         operationDate: values.operationDate ? values.operationDate.toISOString() : undefined,
         currency: values.currency,
         clientId: values.clientId,

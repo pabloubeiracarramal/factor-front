@@ -12,6 +12,7 @@ import {
   ArrowLeftOutlined,
   SaveOutlined
 } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import AppHeader from '../../../components/AppHeader';
 import type { CreateInvoiceDto } from '../../../types';
 import PageHeader from '../../../components/PageHeader';
@@ -36,6 +37,9 @@ export default function CreateInvoicePage() {
       invoiceSeries: CURRENT_YEAR,
       currency: DEFAULT_CURRENCY,
       dueDays: 30,
+      emissionDate: dayjs(),
+      operationDate: dayjs(),
+      paymentMethod: 'BANK_TRANSFER',
       items: [{ name: '', description: '', quantity: 1, price: 0, taxRate: DEFAULT_TAX_RATE }],
     });
   }, [form]);
@@ -51,6 +55,7 @@ export default function CreateInvoicePage() {
         clientId: values.clientId,
         description: values.description?.trim() || undefined,
         dueDays: Number(values.dueDays) || 30,
+        emissionDate: values.emissionDate?.toISOString(),
         operationDate: values.operationDate?.toISOString(),
         invoiceSeries: values.invoiceSeries?.trim(),
         reference: values.reference?.trim() || undefined,

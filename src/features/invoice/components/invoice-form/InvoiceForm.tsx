@@ -96,7 +96,7 @@ export default function InvoiceForm({
                 rules={[{ required: true, message: t('invoice.validation.clientNameRequired') }]}
             >
                 <Select
-                    showSearch
+                    showSearch={{ optionFilterProp: "label" }}
                     size="large"
                     placeholder={t('invoice.clientNamePlaceholder')}
                     options={clientOptions}
@@ -148,7 +148,7 @@ export default function InvoiceForm({
                         label={t('invoice.emissionDate')}
                         name="emissionDate"
                     >
-                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} disabled={disableInvoiceSeries} />
+                        <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} />
                     </Form.Item>
                 </Col>
             </Row>

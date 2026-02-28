@@ -73,6 +73,7 @@ export const useInvoicesTableColumns = ({
         title: t('dashboard.invoiceNumber', { number: '' }).split('#')[0] + '#',
         dataIndex: 'invoiceNumber',
         key: 'invoiceNumber',
+        width: '5%',
         render: (_: string, record: Invoice) => (
           record.status === 'DRAFT'
             ? <span style={{ color: '#999', fontStyle: 'italic' }}>{t('invoice.draft')}</span>
@@ -83,6 +84,7 @@ export const useInvoicesTableColumns = ({
         title: t('invoice.reference'),
         dataIndex: 'reference',
         key: 'reference',
+        width: '15%',
         render: (text: string) => text || '-',
         ...createTextFilter('reference', t('invoice.searchReference'), filters, handleFilterChange),
       },
@@ -90,13 +92,35 @@ export const useInvoicesTableColumns = ({
         title: t('dashboard.client'),
         dataIndex: ['client', 'name'],
         key: 'client',
-        render: (record: Invoice) => record.client?.name || 'N/A',
+        width: '30%',
+        render: (text: string) => text || 'N/A',
         ...createClientFilter(filters, handleFilterChange, t('dashboard.searchClient'), clientOptions),
+      },
+      {
+        title: t('dashboard.emissionDate'),
+        dataIndex: 'emissionDate',
+        key: 'emissionDate',
+        width: '15%',
+        render: (_: string, record: Invoice) => {
+          const overdue = isOverdue(record);
+          return (
+            <span style={overdue ? { color: '#ff4d4f' } : undefined}>
+              {formatDate(record.emissionDate)}
+              {overdue && (
+                <Tooltip title={t('status.overdue')}>
+                  <WarningOutlined style={{ color: '#ff4d4f', marginLeft: 6 }} />
+                </Tooltip>
+              )}
+            </span>
+          );
+        },
+        ...createDateRangeFilter(filters, handleFilterChange),
       },
       {
         title: t('dashboard.amount'),
         dataIndex: 'totalAmount',
         key: 'totalAmount',
+        width: '7.5%',
         render: (_: any, record: Invoice) => {
           const total = calculateInvoiceTotal(record);
           const currency = record.currency || 'EUR';
@@ -114,6 +138,7 @@ export const useInvoicesTableColumns = ({
         title: t('dashboard.status'),
         dataIndex: 'status',
         key: 'status',
+        width: '7.5%',
         render: (_: string, record: Invoice) => {
           const overdue = isOverdue(record);
           const displayStatus = overdue ? 'OVERDUE' : record.status;
@@ -135,27 +160,8 @@ export const useInvoicesTableColumns = ({
         ),
       },
       {
-        title: t('dashboard.dueDate'),
-        dataIndex: 'dueDate',
-        key: 'dueDate',
-        render: (_: string, record: Invoice) => {
-          const overdue = isOverdue(record);
-          return (
-            <span style={overdue ? { color: '#ff4d4f' } : undefined}>
-              {formatDate(record.dueDate)}
-              {overdue && (
-                <Tooltip title={t('status.overdue')}>
-                  <WarningOutlined style={{ color: '#ff4d4f', marginLeft: 6 }} />
-                </Tooltip>
-              )}
-            </span>
-          );
-        },
-        ...createDateRangeFilter(filters, handleFilterChange),
-      },
-      {
         key: 'actions',
-        width: 240,
+        width: '20%',
         render: (_: any, record: Invoice) => (
           <Space size="small" style={{ display: 'flex', justifyContent: 'flex-end' }}>
 
