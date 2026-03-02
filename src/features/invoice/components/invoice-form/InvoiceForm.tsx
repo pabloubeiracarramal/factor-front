@@ -147,6 +147,7 @@ export default function InvoiceForm({
                     <Form.Item
                         label={t('invoice.emissionDate')}
                         name="emissionDate"
+                        rules={[{ required: true, message: t('invoice.validation.emissionDateRequired') }]}
                     >
                         <DatePicker style={{ width: '100%' }} size="large" placeholder={t('invoice.emissionDatePlaceholder')} />
                     </Form.Item>

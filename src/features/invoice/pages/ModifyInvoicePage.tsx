@@ -70,8 +70,8 @@ export default function ModifyInvoicePage() {
       const invoiceData: UpdateInvoiceDto = {
         invoiceSeries: values.invoiceSeries,
         reference: values.reference?.trim() || undefined,
-        emissionDate: values.emissionDate ? values.emissionDate.toISOString() : undefined,
-        operationDate: values.operationDate ? values.operationDate.toISOString() : undefined,
+        emissionDate: values.emissionDate ? values.emissionDate.format('YYYY-MM-DD') : undefined,
+        operationDate: values.operationDate ? values.operationDate.format('YYYY-MM-DD') : undefined,
         currency: values.currency,
         clientId: values.clientId,
         dueDays: Number(values.dueDays) || 30,
